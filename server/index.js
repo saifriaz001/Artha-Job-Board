@@ -11,8 +11,29 @@ const app = express();
 
 const PORT  = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  "https://artha-job-board-ruby.vercel.app",                       // main production site
+  "https://artha-job-board-git-main-saifriaz001s-projects.vercel.app", // Vercel preview link
+  "https://artha-job-board-engu9560o-saifriaz001s-projects.vercel.app", // another preview link
+  "http://localhost:3000", // local dev (optional)
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like curl or Postman) or listed origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
 
 connectMongo();
